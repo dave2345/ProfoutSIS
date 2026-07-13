@@ -14,6 +14,7 @@ class Index extends Component
     public $search = '';
     public $type = '';
     public $status = '';
+    public $authority= '';
     public $perPage = 10;
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
@@ -56,28 +57,66 @@ class Index extends Component
 
     public function render()
     {
-        $query = Certificate::with(['user', 'project', 'tender'])
-            ->where(function ($q) {
-                $q->where('title', 'like', '%' . $this->search . '%')
-                  ->orWhere('certificate_number', 'like', '%' . $this->search . '%')
-                  ->orWhere('issuing_authority', 'like', '%' . $this->search . '%');
-            });
+        $baseQuery = Certificate::query();
 
-        if ($this->type) {
-            $query->where('type', $this->type);
-        }
+        $types = (clone $baseQuery)
+            ->whereNotNull('type')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
 
-        if ($this->status) {
-            $query->where('status', $this->status);
-        }
+        $statuses = (clone $baseQuery)
+            ->whereNotNull('status')
+            ->distinct()
+            ->orderBy('status')
+            ->pluck('status');
 
-        $certificates = $query->orderBy($this->sortField, $this->sortDirection)
+        $authorities = (clone $baseQuery)
+            ->whereNotNull('issuing_authority')
+            ->distinct()
+            ->orderBy('issuing_authority')
+            ->pluck('issuing_authority');
+
+
+        $certificates = Certificate::with([
+            'user',
+            'project',
+            'tender'
+        ])
+
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', "%{$this->search}%")
+                        ->orWhere('certificate_number', 'like', "%{$this->search}%")
+                        ->orWhere('issuing_authority', 'like', "%{$this->search}%");
+                });
+            })
+
+            ->when($this->type, function ($query) {
+                $query->where('type', $this->type);
+            })
+
+            ->when($this->authority, function ($query) {
+                $query->where('issuing_authority', $this->authority);
+            })
+
+            ->when($this->status, function ($query) {
+                $query->where('status', $this->status);
+            })
+
+            ->orderBy(
+                $this->sortField,
+                $this->sortDirection
+            )
+
             ->paginate($this->perPage);
+
 
         return view('livewire.certificates.index', [
             'certificates' => $certificates,
-            'types' => ['compliance', 'accreditation', 'license', 'award', 'training', 'membership', 'other'],
-            'statuses' => ['draft', 'active', 'expired', 'revoked', 'renewed']
+            'types' => $types,
+            'statuses' => $statuses,
+            'authorities' => $authorities,
         ]);
     }
 }

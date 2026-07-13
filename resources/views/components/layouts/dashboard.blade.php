@@ -18,6 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js CDN -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     @livewireStyles
 </head>
@@ -39,13 +40,13 @@
 
             <!-- Page content -->
             <main class="flex-1 p-6 bg-white/80 dark:bg-zinc-900/80">
-                @if(Route::currentRouteName() === 'dashboard')
+                {{-- @if(Route::currentRouteName() === 'dashboard')
 
                 @else
                 <button onclick="window.history.back()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
                     ← Back
                 </button>
-                @endif
+                @endif --}}
                 {{ $slot }}
             </main>
 

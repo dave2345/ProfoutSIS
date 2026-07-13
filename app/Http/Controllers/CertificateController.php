@@ -31,14 +31,19 @@ class CertificateController extends Controller
 
         return view('certificates.create');
     }
+    /**
+     * Edit a certificate.
+     */
+    public function edit(Certificate $certificate)
+    {
+
+        return view('certificates.edit', compact('certificate'));
+    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
@@ -59,15 +64,9 @@ class CertificateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Certificate $certificate)
-    {
-
-    }
+    public function destroy(Certificate $certificate) {}
 
     /**
      * Renew a certificate.
      */
-
-
-
 }

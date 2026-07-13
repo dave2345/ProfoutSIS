@@ -13,7 +13,13 @@ class Edit extends Component
 {
     use WithFileUploads;
 
-    public $certificate;
+    public Certificate $certificate;
+
+    public function mount(Certificate $certificate)
+    {
+        $this->certificate = $certificate;
+    }
+
     public $certificateId;
 
     public $certificate_number;
@@ -57,17 +63,7 @@ class Edit extends Component
         'newFiles.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
     ];
 
-    public function mount($id)
-    {
-        $this->certificateId = $id;
-        $this->certificate = Certificate::findOrFail($id);
 
-        $this->projects = Project::all();
-        $this->tenders = Tender::all();
-
-        // Load existing data
-        $this->loadCertificateData();
-    }
 
     public function loadCertificateData()
     {
